@@ -1,0 +1,94 @@
+<html lang="en">
+-1451, 53, -407
+<head>
+  <%- include('parciales/head'); %>
+    <title>Emisor</title>
+</head>
+
+<body>
+  <header>
+    <%- include('parciales/navbar'); %>
+  </header>
+
+  <div class="container">
+    <h1>Emisor</h1>
+    
+    <hr>
+     <div class="row">
+      <div class="col-sm-4">
+        <label for="razonSocial" class="form-label">Razon Social</label>
+        <input class="form-control" id="razonSocial" value="<%- razonSocial %>">
+        </input>
+      </div>
+      
+      <div class="col-sm-4">
+        <label for="rfc" class="form-label">RFC</label>
+        <input class="form-control" id="rfc" value="<%- rfc %>">
+        </select>
+      </div>
+      
+      <div class="col-sm-4">
+        <label for="codigoPostal" class="form-label">Codigo Postal</label>
+        <input class="form-control" id="codigoPostal" value="<%- codigoPostal %>">
+        </select>
+      </div>
+    </div>
+
+<hr>
+    
+    <div class="row">
+      <div class="col-sm-6">
+        <label for="certificado" class="form-label">Certificado</label>
+        <input class="form-control" type="file" id="certificado" accept=".cer">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <label for="llavePrivada" class="form-label">Llave Privada</label>
+        <input class="form-control" type="file" id="llavePrivada" accept=".key">
+      </div>
+    </div>
+
+    <div class="row">
+       <div class="col-sm-6">
+    <label for="constraseña" class="form-label">Contraseña</label>
+   
+      <input type="password" class="form-control" id="constraseña">
+  
+  </div>
+    </div>
+    
+    <hr>
+    <br>
+    <button class="btn btn-primary float-end" id="guardar">Guardar</button>
+    <script>
+
+function guardar() {
+            $.ajax('/guardarEmisor', {
+            	type: 'POST',
+            	contentType: "application/json",
+            	data: JSON.stringify({ "emisor": $("#razonSocial").val()}),
+            	dataType: "text",
+            	success: function (respuesta) {
+                if (respuesta == "ok") {
+                  Swal.fire(
+                    'Good job!',
+                    'You clicked the button!',
+                    'success'
+                  )
+                }
+            },
+            error: function (jqXhr, textStatus, errorMessage) {
+              console.log(errorMessage);
+                //$('p').append('Error' + errorMessage);
+            }
+        });
+        }
+      
+      $("#guardar").on("click", function () {
+        guardar();
+      });
+    </script>
+</body>
+</html>
