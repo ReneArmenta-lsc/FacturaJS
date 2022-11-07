@@ -13,19 +13,158 @@
   <div class="container">
     <h1>Clientes</h1>
     <hr>
-
-    <div id="contenedorTablaPolizas" style="height: 300px;">
-        <table class="table table-striped" id="tablaPolizas">
+        <table class="table table-striped" id="tablaClientes">
           <thead>
             <tr>
               <th>Nombre</th>
               <th>RFC</th>
+              <!--th>Regimen Fiscal</th>
+              <th>Codigo Postal</th>
+              <th>Uso de Cfdi</th-->
             </tr>
           </thead>
+          <tbody>
+          </tbody>
         </table>
-      </div>
+<button class="btn btn-primary" id="btnAgregarCliente">Agregar</button>
   </div>
+
+  <!-- Modal -->
+<div class="modal fade" id="modalAgregarCliente" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Cliente</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="razonSocial" class="form-label">Razon Social</label>
+        <input class="form-control" id="razonSocial" value="">
+
+        <label for="rfc" class="form-label">RFC</label>
+        <input class="form-control" id="rfc" value="">
+
+        <label for="regimenFiscal" class="form-label">Regimen Fiscal</label>
+        <select class="form-select" id="regimenFiscal">
+        </select>
+
+        <label for="codigoPostal" class="form-label">Codigo Postal</label>
+        <input class="form-control" id="codigoPostal" value="">
+
+        <label for="usoDeCfdi" class="form-label">Uso De Cfdi</label>
+        <select class="form-select" id="usoDeCfdi">
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger pull-left">Eliminar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="guardarCliente">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
     <script>
+      $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_RegimenFiscal.json",         function(data){
+        console.log(data);
+        var toAppend = '';
+           $.each(data,function(i,o){
+           toAppend += '<option value="' + o.id + '">'+ o.descripcion+'</option>';
+          });
+
+         $('#regimenFiscal').append(toAppend);
+      });
+      $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_UsoCFDI.json",         function(data){
+        console.log(data);
+        var toAppend = '';
+           $.each(data,function(i,o){
+           toAppend += '<option value="' + o.id + '">'+ o.id + " " +o.descripcion+'</option>';
+          });
+
+         $('#usoDeCfdi').append(toAppend);
+      });
+
+      $("#guardarCliente").on("click", function() {
+        guardarCliente();
+      });
+
+      function guardarCliente() {
+        $.ajax('/guardarCliente', {
+            	type: 'POST',
+            	contentType: "application/json",
+            	data: JSON.stringify({ "id": $("#modalAgregarCliente").prop("idCliente"),
+                "razonSocial": $("#razonSocial").val(),
+              "rfc": $("#rfc").val(),
+              "regimenFiscal": $("#regimenFiscal").val(),
+              "codigoPostal": $("#codigoPostal").val(),
+              "usoDeCfdi": $("#usoDeCfdi").val()}),
+            	dataType: "text",
+            	success: function (respuesta) {
+                if (respuesta == "ok") {
+                  Swal.fire(
+                    'Good job!',
+                    'You clicked the button!',
+                    'success'
+                  )
+                  $("#modalAgregarCliente").modal('toggle');
+                  cargarClientes();
+                }
+            },
+            error: function (jqXhr, textStatus, errorMessage) {
+              console.log(errorMessage);
+                //$('p').append('Error' + errorMessage);
+            }
+        });
+      }
+
+      function cargarClientes() {
+        console.log("cargando clientes");
+
+        $.ajax('/cargarClientes', {
+            	type: 'POST',
+            	contentType: "application/json",
+            	data: "",
+            	dataType: "html",
+            	success: function (respuesta) {
+                $("#tablaClientes tbody").empty();
+                $("#tablaClientes tbody").append(respuesta);
+            },
+            error: function (jqXhr, textStatus, errorMessage) {
+              console.log(errorMessage);
+                //$('p').append('Error' + errorMessage);
+            }
+        });
+        
+        
+      }
+
+      cargarClientes();
+
+      $("#tablaClientes").on("click", "tr", function () {
+         limpiarModal();
+        $("#modalAgregarCliente").prop("idCliente", $(this).attr("id"));
+        $("#razonSocial").val($(this).attr("nombre"));
+        $("#rfc").val($(this).attr("rfc"));
+        $("#regimenFiscal").val($(this).attr("regimenFiscal"));
+        $("#codigoPostal").val($(this).attr("codigoPostal"));
+        $("#usoDeCfdi").val($(this).attr("usoDeCfdi"));
+        $("#modalAgregarCliente").modal('toggle');
+        console.log(this);
+      });
+
+      function limpiarModal() {
+        $("#modalAgregarCliente").prop("idCliente", "");
+        $("#razonSocial").val("");
+        $("#rfc").val("");
+        $("#regimenFiscal").val("");
+        $("#codigoPostal").val("");
+        $("#usoDeCfdi").val("");
+      }
+
+      $("#btnAgregarCliente").on("click", function () {
+        limpiarModal();
+        $("#modalAgregarCliente").modal('toggle');
+      })
     </script>
 </body>
 

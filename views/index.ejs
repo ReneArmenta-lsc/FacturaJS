@@ -13,90 +13,106 @@
   <div class="container">
     <h1>Factura Electronica</h1>
     <hr>
-    <h3>Comprobante</h3>
-    <!--<div class="row">
-      <div class="col-sm-2">
-        <label for="serie" class="form-label">Serie</label>
-        <input type="text" class="form-control" id="serie" disabled>
-      </div>
-      <div class="col-sm-4">
-        <label for="folio" class="form-label">Folio</label>
-        <input type="text" class="form-control" id="folio" disabled>
-      </div>
-    </div>-->
-
+    <div class="alert alert-dark" role="alert"><h3>Comprobante</h3></div>
     <div class="row">
-      <div class="col-sm-4">
-        <label for="regimenFiscal" class="form-label">Regimen Fiscal</label>
-        <select class="form-select" id="regimenFiscal">
-        </select>
+      <div class="col-sm-12" data-bs-toggle="collapse" data-bs-target="#collapseEmisor" aria-expanded="false" aria-controls="collapseEmisor">
+        <div class="alert alert-dark" role="alert"><h3>Emisor</h3> <h5><%- razonSocial %></h5></div>
       </div>
       
-      <div class="col-sm-4">
-        <label for="codigoPostal" class="form-label">Codigo Postal</label>
-        <select class="form-select" id="codigoPostal">
-        </select>
+      <div class="collapse" id="collapseEmisor">
+        
+        
+        <strong>RFC:</strong> <%- rfc %>
+        <br>
+        <strong>Regimen Fiscal:</strong> <%- regimenFiscal %>
+        <br>
+        <strong>Codigo Postal:</strong> <%- codigoPostal %>
+        <br>
+      </div>
+    </div>
+
+<hr>
+    <div class="row">
+    <div class="col-sm-12" data-bs-toggle="collapse" data-bs-target="#collapseCliente" aria-expanded="false" aria-controls="collapseCliente">
+        <div class="alert alert-dark" role="alert"><h3>Receptor</h3> <h5 id="nombreCliente"></h5></div>
       </div>
       
-      <div class="col-sm-4">
-        <label for="fechaDeEmision" class="form-label">Fecha de Emision</label>
-        <select class="form-select" id="fechaDeEmision">
+      <div class="collapse" id="collapseCliente">
+     
+        
+          <strong>RFC:</strong> <text id="rfcCliente"></text>
+        <br>
+        <strong>Regimen Fiscal:</strong> <text id="regimenFiscalCliente"></text>
+        <br>
+        <strong>Codigo Postal:</strong><text id="codigoPostalCliente"></text>
+        <br>
+          <hr>
+        <select class="form-select" id="clientes">
+          <%- clientes %>
         </select>
+        
       </div>
-    </div>
-    
+ </div>
+          
+<hr>
     <div class="row">
-      <div class="col-sm-4">
-        <label for="tipoDeComprobante" class="form-label">Tipo de Comprobante</label>
-        <select class="form-select" id="tipoDeComprobante">
-        </select>
+    <div class="col-sm-12" data-bs-toggle="collapse" data-bs-target="#collapseConceptos" aria-expanded="false" aria-controls="collapseConceptos">
+      <div class="alert alert-dark" role="alert">
+        <h3 >Conceptos</h3>
       </div>
-
-      <div class="col-sm-4">
-        <label for="formaDePago" class="form-label">Forma de Pago</label>
-        <select class="form-select" id="formaDePago">
-        </select>
       </div>
-
-      <div class="col-sm-4">
-        <label for="metodoDePago" class="form-label">Metodo de Pago</label>
-        <select class="form-select" id="metodoDePago">
-        </select>
+      <div class="collapse" id="collapseConceptos">
+        <table class="table table-striped" id="tablaConceptos">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>RFC</th>
+              </tr>
+            </thead>
+              
+            <tbody>
+              <tr>
+                <td>Nombre</td>
+                <td>RFC</td>
+              </tr>
+          </tbody>
+        </table>
+        <hr>
+        <button class="btn btn-primary" id="agregarConcepto">Agregar</button>
       </div>
-    </div>
-    <hr>
-    <h3>Datos Generales</h3>
-    <div class="row">
-      <div class="col-sm-4">
-        <label for="moneda" class="form-label">Moneda</label>
-        <select class="form-select" id="moneda">
-        </select>
-      </div>
-
-      <div class="col-sm-4">
-        <label for="tipoDeCambio" class="form-label">Tipo de Cambio</label>
-        <select class="form-select" id="tipoDeCambio">
-        </select>
-      </div>
-    </div>
-    
-    
+ </div>
     <br>
     <button class="btn btn-primary" id="timbrar">Timbrar</button>
-    <script>
+    <script> 
+
+      function timbrar() {
+            $.ajax('/timbrar', {
+            	type: 'POST',
+            	contentType: "application/json",
+            	data: "",
+            	dataType: "json",
+            	success: function (respuesta) {
+                console.log(respuesta[1]);
+                if (respuesta[0] == "ok") {
+                  Swal.fire(
+                    'Good job!',
+                    'You clicked the button!',
+                    'success'
+                  )
+                }
+            },
+            error: function (jqXhr, textStatus, errorMessage) {
+              console.log(errorMessage);
+                //$('p').append('Error' + errorMessage);
+            }
+        });
+        }
+      
       $("#timbrar").on("click", function () {
-        console.log("timbrando");
+        timbrar();
       });
 
-$.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_RegimenFiscal.json",         function(data){
-        console.log(data);
-        var toAppend = '';
-           $.each(data,function(i,o){
-           toAppend += '<option value="' + o.id + '">'+ o.descripcion+'</option>';
-          });
 
-         $('#regimenFiscal').append(toAppend);
-      });
 
       
   $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_TipoDeComprobante.json",         function(data){
@@ -109,15 +125,6 @@ $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master
          $('#tipoDeComprobante').append(toAppend);
       });
 
-      $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_UsoCFDI.json",         function(data){
-        console.log(data);
-        var toAppend = '';
-           $.each(data,function(i,o){
-           toAppend += '<option value="' + o.id + '">'+ o.id + " " +o.descripcion+'</option>';
-          });
-
-         $('#usoDeCFDI').append(toAppend);
-      });
 
 $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master/c_FormaPago.json",         function(data){
         console.log(data);
@@ -149,7 +156,18 @@ $.getJSON("https://raw.githubusercontent.com/bambucode/catalogos_sat_JSON/master
 
          $('#moneda').append(toAppend);
       });
-     
+
+      $("#clientes").on("change", function() {
+        //console.log(this);
+        $("#nombreCliente").text($("#clientes option:selected").text());
+        $("#rfcCliente").text($("#clientes option:selected").attr("rfc"));
+        $("#regimenFiscalCliente").text($("#clientes option:selected").attr("regimenFiscal"));
+        $("#codigoPostalCliente").text($("#clientes option:selected").attr("codigoPostal"));
+      });
+
+      $("#agregarConcepto").on("click", function () {
+        $("#tablaConceptos tbody").append("<tr><td>aaa</td><td>bbb</td></tr>");
+      });
     </script>
 </body>
 
